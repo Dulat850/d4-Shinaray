@@ -4,9 +4,8 @@ import models.Book;
 import models.Cart;
 import models.User;
 import repositories.CartRepository;
-import data.PostgresDB;
-import data.interfaces.IDB;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class CartApplication {
@@ -59,14 +58,13 @@ public class CartApplication {
     }
 
     private void addBookToCart() {
-        int userId;
-        do {
-            System.out.println("Enter user ID to add to cart:");
-            userId = getUserInputAsInt();
-            if (getUserById(userId) == null) {
-                System.out.println("User not found! Try again.");
-            }
-        } while (getUserById(userId) == null);
+        System.out.println("Enter user ID to add to cart:");
+        int userId = getUserInputAsInt();
+        User user = getUserById(userId);
+        if (user == null) {
+            System.out.println("User not found! Try again.");
+            return;
+        }
 
         System.out.println("Enter book ID to add to cart:");
         int bookId = getUserInputAsInt();
@@ -83,41 +81,50 @@ public class CartApplication {
 
     private void removeBookFromCart() {
         System.out.println("Enter book ID to remove from cart:");
-        int bookId = scanner.nextInt();
-        scanner.nextLine();  // consume newline
+
+        int bookId = getUserInputAsInt();
         Book book = getBookById(bookId);
 
         if (book != null) {
-            cartController.removeBookFromCart(book);
+            System.out.println("Enter user ID:");
+            int userId = getUserInputAsInt(); // Получаем ID пользователя
+
+            cartController.removeBookFromCart(book, userId);
             System.out.println("Book removed from cart!");
         } else {
             System.out.println("Book not found!");
         }
     }
 
-    private void viewCart() {
-        Cart cart = cartController.getCart();
-        if (cart == null || cart.getCartBooks().isEmpty()) {
-            System.out.println("Your cart is empty!");
-            return;
-        }
 
-        System.out.println("Your Cart:");
-        for (int i = 0; i < cart.getCartBooks().size(); i++) {
-            Book book = cart.getCartBooks().get(i);
-            int quantity = cart.getCartQuantities().get(i);
-            double price = cart.getCartSum().get(i);
-            System.out.println("Book: " + book.getTitle() + ", Quantity: " + quantity + ", Total: " + (quantity * price));
+    private void viewCart() {
+        System.out.println("Enter user ID to view cart:");
+        int userId = getUserInputAsInt();
+
+        List<Cart> cartItems = cartController.getCartItems(userId);
+
+        if (cartItems.isEmpty()) {
+            System.out.println("Your cart is empty.");
+        } else {
+            System.out.println("Your Cart:");
+            for (Cart item : cartItems) {
+                System.out.println(item);
+            }
         }
     }
 
+
     private void viewTotalCost() {
-        double totalCost = cartController.getTotalCost();
-        System.out.println("Total Cost: " + totalCost);
+        System.out.println("Enter user ID to view total cost:");
+        int userId = getUserInputAsInt();
+        double totalCost = cartController.getTotalCost(userId);
+        System.out.println("Total Cost for user " + userId + ": " + totalCost);
     }
 
     private void clearCart() {
-        cartController.clearCart();
+        System.out.print("Enter user ID to view cart: ");
+        int userId = getUserInputAsInt();
+        cartController.clearCart(userId);
         System.out.println("Cart cleared!");
     }
 

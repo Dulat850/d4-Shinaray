@@ -37,7 +37,7 @@ public class BookApplication {
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Please enter a valid option!" + e);
-                scanner.nextLine(); // to ignore incorrect input
+                scanner.nextLine();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

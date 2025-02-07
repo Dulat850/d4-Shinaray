@@ -1,140 +1,130 @@
 package repositories;
 
 import data.interfaces.IDB;
-import models.Cart;
 import models.Book;
+import models.Cart;
 import models.User;
 import repositories.interfaces.ICartRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CartRepository implements ICartRepository {
 
-    private final IDB idb;
+    // Метод для получения подключения к базе данных
+    private final IDB db;
 
-    public CartRepository(IDB idb) {
-        this.idb = idb;
+    public CartRepository(IDB db) {
+        this.db = db;
     }
 
+    // Метод для добавления корзины в базу данных
     @Override
-    public void saveCart(Cart cart, int userId) {
-        String query = "INSERT INTO carts (book_id, user_id, quantity, price) VALUES (?, ?, ?, ?)";
+    public void addCart(Cart cart) {
+        String query = "INSERT INTO carts (user_id, book_name, price) VALUES (?, ?, ?)";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, cart.getUserId());
+            stmt.setString(2, cart.getBookName());
+            stmt.setDouble(3, cart.getPrice());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-        try (Connection connection = idb.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+    // Метод для добавления книги в корзину
+    @Override
+    public void addBookToCart(Cart cart, Book book) {
+        String query = "UPDATE carts SET book_name = ?, price = ? WHERE cart_id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, book.getTitle());
+            stmt.setDouble(2, book.getPrice());
+            stmt.setInt(3, cart.getCartId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-            for (int i = 0; i < cart.getCartBooks().size(); i++) {
-                Book book = cart.getCartBooks().get(i);
-                int quantity = cart.getCartQuantities().get(i);
-                double price = cart.getCartSum().get(i);
+    // Метод для удаления книги из корзины
+    @Override
+    public void removeBookFromCart(Cart cart, Book book) {
+        String query = "DELETE FROM carts WHERE user_id = ? AND book_name = ?";
 
-                int bookId = book.getId();
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, cart.getUserId());
+            stmt.setString(2, book.getTitle());
+            int rowsAffected = stmt.executeUpdate();
 
-                statement.setInt(1, userId);
-                statement.setInt(2, bookId);  // Передаем userId
-                statement.setInt(3, quantity);
-                statement.setDouble(4, price);
-
-                statement.addBatch();
+            if (rowsAffected > 0) {
+                System.out.println("Book successfully removed from cart!");
+            } else {
+                System.out.println("Book not found in cart.");
             }
-
-            statement.executeBatch();
-            System.out.println("Cart saved successfully!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
 
-
-    public Cart getCartByUserId(int userId) {
-        Cart cart = new Cart();
-
-        String query = "SELECT c.book_id, c.price, b.title, b.author FROM carts c " +
-                "JOIN books b ON c.book_id = b.id WHERE c.user_id = ?";
-
-        try (Connection connection = idb.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                int bookId = resultSet.getInt("book_id");
-                Double price = resultSet.getDouble("price");
-                String title = resultSet.getString("title");
-                String author = resultSet.getString("author");
-
-                Book book = new Book();
-                book.setId(bookId);
-                book.setTitle(title);
-                book.setAuthor(author);
-
-                cart.getCartBooks().add(book);
-                cart.getCartSum().add(price);
+    // Метод для вычисления общей стоимости корзины
+    @Override
+    public double calculateTotalCost(Cart cart) {
+        String query = "SELECT SUM(price) FROM carts WHERE user_id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, cart.getUserId());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return cart;
+        return 0.0;
     }
 
-    public void updateCart(Cart cart, int userId) {
-        String deleteQuery = "DELETE FROM carts WHERE user_id = ?";
-        String insertQuery = "INSERT INTO carts (user_id, book_id, price) VALUES (?, ?, ?)";
-
-        try (Connection connection = idb.getConnection()) {
-            try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
-                deleteStatement.setInt(1, userId);
-                deleteStatement.executeUpdate();
-            }
-
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                for (int i = 0; i < cart.getCartBooks().size(); i++) {
-                    Book book = cart.getCartBooks().get(i);
-                    double price = cart.getCartSum().get(i);
-
-                    insertStatement.setInt(1, userId);
-                    insertStatement.setInt(2, book.getId());
-                    insertStatement.setDouble(3, price);
-
-                    insertStatement.addBatch();
-                }
-                insertStatement.executeBatch();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public double getTotalCost(Cart cart) {
-        double totalCost = 0;
-        for (double price : cart.getCartSum()) {
-            totalCost += price;
-        }
-        return totalCost;
-    }
-
-    public void deleteCart(int userId) {
+    // Метод для очистки корзины
+    @Override
+    public void clearCart(int userId) {
         String query = "DELETE FROM carts WHERE user_id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            int affectedRows = stmt.executeUpdate();
 
-        try (Connection connection = idb.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setInt(1, userId);
-            statement.executeUpdate();
+            System.out.println("Cart cleared! Rows affected: " + affectedRows);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
+    // Метод для обновления книги в корзине
+    @Override
+    public void updateBookInCart(Cart cart, Book book) {
+        String query = "UPDATE carts SET book_name = ?, price = ? WHERE cart_id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, book.getTitle());
+            stmt.setDouble(2, book.getPrice());
+            stmt.setInt(3, cart.getCartId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Метод для получения книги по ID
     @Override
     public Book getBookById(int id) {
         Connection connection = null;
         try {
-            connection = idb.getConnection();
+            connection = db.getConnection();
             String sql = "SELECT * FROM books WHERE id = ?";
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, id);
@@ -153,11 +143,12 @@ public class CartRepository implements ICartRepository {
         return null;
     }
 
+    // Метод для получения пользователя по ID
     @Override
     public User getUserById(int id) {
         Connection connection = null;
         try {
-            connection = idb.getConnection();
+            connection = db.getConnection();
             String sql ="SELECT * FROM users WHERE id = ?";
             PreparedStatement st = connection.prepareStatement(sql);
             st.setInt(1, id);
@@ -174,5 +165,99 @@ public class CartRepository implements ICartRepository {
         }
         return null;
     }
-}
 
+    // Метод для получения всех корзин
+    public List<Book> getBooksInCart(int userId) {
+        List<Book> books = new ArrayList<>();
+        String query = "SELECT b.book_id, b.name, b.price FROM books b " +
+                "JOIN carts c ON b.name = c.book_name " +
+                "WHERE c.user_id = ?";
+
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                books.add(new Book(
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getString("genre"),
+                        rs.getDouble("price")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return books;
+    }
+
+
+
+    @Override
+    public void saveCart(Cart cart) {
+        String query = "INSERT INTO carts (user_id, book_name, price) VALUES (?, ?, ?)";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setInt(1, cart.getUserId());
+            stmt.setString(2, cart.getBookName());  // Проверить, что book_name не NULL
+            stmt.setDouble(3, cart.getPrice());
+
+            System.out.println("Saving book to cart: " + cart.getBookName());  // Debug
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public Cart getCartByUserId(int userId) {
+        String query = "SELECT * FROM carts WHERE user_id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Cart(
+                        rs.getInt("user_id"),
+                        rs.getString("book_name"),
+                        rs.getDouble("price")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Cart> getCartItems(int userId) {
+        List<Cart> cartItems = new ArrayList<>();
+        String query = "SELECT * FROM carts WHERE user_id = ?";
+
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Cart cart = new Cart(
+                        rs.getInt("user_id"),
+                        rs.getString("book_name"),
+                        rs.getDouble("price")
+                );
+                cartItems.add(cart);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return cartItems;
+    }
+
+
+}
