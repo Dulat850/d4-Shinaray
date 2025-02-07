@@ -1,8 +1,7 @@
 package start;
 
-import data.PostgresDB;
 import data.interfaces.IDB;
-import models.Role;
+import RoleManagement.Role;
 import models.User;
 
 import java.sql.Connection;

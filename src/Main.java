@@ -6,7 +6,7 @@ import controllers.interfaces.IBookController;
 import controllers.interfaces.ICartController;
 import data.PostgresDB;
 import data.interfaces.IDB;
-import models.Role;
+import RoleManagement.Role;
 import repositories.BookRepository;
 import repositories.CartRepository;
 import repositories.UserRepository;

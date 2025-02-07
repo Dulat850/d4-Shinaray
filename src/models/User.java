@@ -1,6 +1,8 @@
 
 package models;
 
+import RoleManagement.Role;
+
 public class User {
     private int id;
     private String name;

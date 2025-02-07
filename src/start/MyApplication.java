@@ -1,7 +1,7 @@
 package start;
 
 import controllers.UserController;
-import models.Role;
+import RoleManagement.Role;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
