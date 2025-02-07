@@ -1,5 +1,7 @@
+package start;
 
 import controllers.UserController;
+import models.Role;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -25,7 +27,7 @@ public class MyApplication {
         System.out.print("Select an option (0-3): ");
     }
 
-    public void start() {
+    public void start(Role role) {
         boolean op = true;
         while (op) {
             mainMenu();
@@ -34,25 +36,24 @@ public class MyApplication {
                 scanner.nextLine();
                 switch (option) {
                     case 1 :
-                        getAllUsersMenu();
+                        if(role == Role.ADMIN) {
+                            getAllUsersMenu();
+                        } else if (role == Role.USER) {
+                            System.out.println("Access denied! Only admins can get all users.");
+                        }
                         break;
                     case 2 :
-                        getUserByIdMenu();
+                        if(role == Role.ADMIN) {
+                            getUserByIdMenu();
+                        }else if(role == Role.USER) {
+                            System.out.println("Access denied! Only admins can get user.");
+                        }
                         break;
                     case 3 :
-                        createUserMenu();
-                        break;
-                    case 4 :
-                        System.out.print("Please enter email: ");
-                        String email = scanner.nextLine();
-                        System.out.print("Please enter password: ");
-                        String password = scanner.nextLine();
-                        if (loginMenu(email, password)) {
-                            System.out.println("Login Successful!");
-                            op = false;
-                            return;}
-                        else{
-                            System.out.println("Login Failed!");
+                        if(role == Role.ADMIN) {
+                            createUserMenu();
+                        }else if(role == Role.USER) {
+                            System.out.println("Access denied! Only admins can create user.");
                         }
                         break;
                     case 0 : {

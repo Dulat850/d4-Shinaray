@@ -1,5 +1,6 @@
+package start;
+
 import controllers.PaymentController;
-import models.Payment;
 
 import java.util.Scanner;
 

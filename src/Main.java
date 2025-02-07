@@ -6,6 +6,7 @@ import controllers.interfaces.IBookController;
 import controllers.interfaces.ICartController;
 import data.PostgresDB;
 import data.interfaces.IDB;
+import models.Role;
 import repositories.BookRepository;
 import repositories.CartRepository;
 import repositories.UserRepository;
@@ -14,6 +15,7 @@ import repositories.interfaces.IBookRepository;
 import repositories.interfaces.ICartRepository;
 import repositories.interfaces.IUserRepository;
 import repositories.interfaces.IPaymentRepository;
+import start.*;
 
 
 public class Main {
@@ -22,6 +24,8 @@ public class Main {
         String user = "postgres";
         String password = "700235";
         IDB db = new PostgresDB(url, user, password);
+        Role roll;
+        boolean enabled;
 
 
         IUserRepository userRepo = new UserRepository(db);
@@ -38,12 +42,16 @@ public class Main {
 
 
         MyApplication app = new MyApplication(userController);
-        app.start();
         BookApplication bookApp = new BookApplication(bookController);
         CartApplication cartApplication = new CartApplication(cartController);
         PaymentApplication paymentApp = new PaymentApplication(paymentController);
 
+        Start starty = new Start(db);
+        starty.start();
+        roll = starty.role;
+        enabled = starty.enter;
 
+        app.start(roll);
         bookApp.start();
         cartApplication.start();
         paymentApp.start();

@@ -6,6 +6,7 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private Role role = Role.USER;
 
     public User(){
 
@@ -20,6 +21,12 @@ public class User {
     public User(int id, String name, String email, String password) {
         this(name, email, password);
         setId(id);
+    }
+
+    public User(int id, String name, String email, String password, Role role) {
+        this(name, email, password);
+        setId(id);
+        setRole(role);
     }
 
     public int getId() {
@@ -52,6 +59,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
