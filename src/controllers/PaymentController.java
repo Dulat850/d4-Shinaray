@@ -1,10 +1,11 @@
 package controllers;
 
+import controllers.interfaces.IBookController;
 import models.Payment;
 import repositories.interfaces.IPaymentRepository;
 import java.util.List;
 
-public class PaymentController implements controllers.IPaymentController {
+public class PaymentController implements IBookController.IPaymentController {
     private final IPaymentRepository repo;
 
     public PaymentController(IPaymentRepository repo) {

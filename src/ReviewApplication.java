@@ -70,3 +70,73 @@ public class ReviewApplication {
         System.out.println(response);
     }
 }*/
+import controllers.ReviewController;
+import java.util.Scanner;
+
+public class ReviewApplication {
+    private final ReviewController reviewController;
+    private final Scanner scanner = new Scanner(System.in);
+
+    public ReviewApplication(ReviewController reviewController) {
+        this.reviewController = reviewController;
+    }
+
+    public void start() {
+        while (true) {
+            System.out.println("\nReview Management:");
+            System.out.println("1. Add Review");
+            System.out.println("2. Approve Review");
+            System.out.println("3. Reject Review");
+            System.out.println("4. Delete Review");
+            System.out.println("5. Show All Reviews");
+            System.out.println("6. Show Pending Reviews");
+            System.out.println("0. Exit");
+            System.out.print("Select an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1 -> addReview();
+                case 2 -> approveReview();
+                case 3 -> rejectReview();
+                case 4 -> deleteReview();
+                case 5 -> System.out.println(reviewController.showAllReviews());
+                case 6 -> System.out.println(reviewController.showPendingReviews());
+                case 0 -> {
+                    System.out.println("Exiting...");
+                    return;
+                }
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void addReview() {
+        System.out.print("Enter User ID: ");
+        int userId = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Enter Comment: ");
+        String comment = scanner.nextLine();
+        System.out.print("Enter Rating (1-5): ");
+        int rating = scanner.nextInt();
+        System.out.println(reviewController.addReview(userId, comment, rating));
+    }
+
+    private void approveReview() {
+        System.out.print("Enter Review ID: ");
+        int reviewId = scanner.nextInt();
+        System.out.println(reviewController.approveReview(reviewId));
+    }
+
+    private void rejectReview() {
+        System.out.print("Enter Review ID: ");
+        int reviewId = scanner.nextInt();
+        System.out.println(reviewController.rejectReview(reviewId));
+    }
+
+    private void deleteReview() {
+        System.out.print("Enter Review ID: ");
+        int reviewId = scanner.nextInt();
+        System.out.println(reviewController.deleteReview(reviewId));
+    }
+}
+

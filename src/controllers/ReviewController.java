@@ -46,3 +46,53 @@ public class ReviewController implements IReviewController {
         return (updated) ? "Review status updated" : "Failed to update review status";
     }
 }*/
+package controllers;
+
+import models.Review;
+import repositories.interfaces.IReviewRepository;
+import java.util.List;
+
+public class ReviewController {
+    private final IReviewRepository reviewRepo;
+
+    public ReviewController(IReviewRepository reviewRepo) {
+        this.reviewRepo = reviewRepo;
+    }
+
+    public String addReview(int userId, String comment, int rating) {
+        if (rating < 1 || rating > 5) {
+            return "Invalid rating! Please enter a rating between 1 and 5.";
+        }
+        Review review = new Review(userId, comment, rating);
+        return reviewRepo.addReview(review) ? "Review added successfully!" : "Failed to add review.";
+    }
+
+    public String approveReview(int reviewId) {
+        return reviewRepo.updateReviewStatus(reviewId, "Approved") ? "Review approved!" : "Failed to approve review.";
+    }
+
+    public String rejectReview(int reviewId) {
+        return reviewRepo.updateReviewStatus(reviewId, "Rejected") ? "Review rejected!" : "Failed to reject review.";
+    }
+
+    public String deleteReview(int reviewId) {
+        return reviewRepo.deleteReview(reviewId) ? "Review deleted successfully!" : "Failed to delete review.";
+    }
+
+    public String showAllReviews() {
+        List<Review> reviews = reviewRepo.getAllReviews();
+        if (reviews.isEmpty()) return "No reviews found.";
+        StringBuilder sb = new StringBuilder();
+        for (Review r : reviews) sb.append(r).append("\n");
+        return sb.toString();
+    }
+
+    public String showPendingReviews() {
+        List<Review> reviews = reviewRepo.getPendingReviews();
+        if (reviews.isEmpty()) return "No pending reviews.";
+        StringBuilder sb = new StringBuilder();
+        for (Review r : reviews) sb.append(r).append("\n");
+        return sb.toString();
+    }
+}
+

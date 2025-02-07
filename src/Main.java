@@ -1,20 +1,11 @@
-import controllers.BookController;
-import controllers.CartController;
-import controllers.UserController;
-import controllers.PaymentController;
+import controllers.*;
 import controllers.interfaces.IBookController;
 import controllers.interfaces.ICartController;
 import data.PostgresDB;
 import data.interfaces.IDB;
 import RoleManagement.Role;
-import repositories.BookRepository;
-import repositories.CartRepository;
-import repositories.UserRepository;
-import repositories.PaymentRepository;
-import repositories.interfaces.IBookRepository;
-import repositories.interfaces.ICartRepository;
-import repositories.interfaces.IUserRepository;
-import repositories.interfaces.IPaymentRepository;
+import repositories.*;
+import repositories.interfaces.*;
 import start.*;
 
 
@@ -22,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         String url = "jdbc:postgresql://localhost:5432/bookstore";
         String user = "postgres";
-        String password = "700235";
+        String password = "Shin127ay";
         IDB db = new PostgresDB(url, user, password);
         Role roll;
         boolean enabled;
@@ -39,6 +30,11 @@ public class Main {
 
         IPaymentRepository paymentRepo = new PaymentRepository(db);
         PaymentController paymentController = new PaymentController(paymentRepo);
+
+        IReviewRepository reviewRepo = new ReviewRepository(db);
+        ReviewController reviewController = new ReviewController(reviewRepo);
+        ReviewApplication reviewApp = new ReviewApplication(reviewController);
+2
 
 
         MyApplication app = new MyApplication(userController);

@@ -9,4 +9,6 @@ public interface IUserRepository {
     User getUserById(int id);
     List<User> getAllUsers();
     User getUserByEmail(String email);
+
+    boolean deleteUser(int userId);
 }
