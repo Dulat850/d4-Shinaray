@@ -1,4 +1,4 @@
-/*package controllers;
+package controllers;
 
 import controllers.interfaces.IReviewController;
 import models.Review;
@@ -21,28 +21,15 @@ public class ReviewController implements IReviewController {
 
     @Override
     public String getReviewsByUser(int userId) {
-        return "";
-    }
+        List<Review> reviews = repo.getReviewsByUser(userId);
+        if (reviews == null || reviews.isEmpty()) {
+            return "No reviews found for user ID: " + userId;
+        }
 
-    @Override
-    public String getReviewById(int id) {
-        Review review = repo.getReviewById(id);
-        return (review == null) ? "Review not found" : review.toString();
-    }
-
-    @Override
-    public String getAllReviews() {
-        List<Review> reviews = repo.getAllReviews();
-        StringBuilder response = new StringBuilder();
+        StringBuilder response = new StringBuilder("Reviews for user " + userId + ":\n");
         for (Review review : reviews) {
             response.append(review.toString()).append("\n");
         }
         return response.toString();
     }
-
-    @Override
-    public String updateReviewStatus(int id, String status) {
-        boolean updated = repo.updateReviewStatus(id, status);
-        return (updated) ? "Review status updated" : "Failed to update review status";
-    }
-}*/
+}
