@@ -1,4 +1,4 @@
-/*package repositories;
+package repositories;
 
 import data.interfaces.IDB;
 import models.Review;
@@ -42,4 +42,4 @@ public class ReviewRepository implements IReviewRepository {
         }
         return reviews;
     }
-}*/
+}
