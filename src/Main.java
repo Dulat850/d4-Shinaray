@@ -1,6 +1,7 @@
 import controllers.*;
 import controllers.interfaces.IBookController;
 import controllers.interfaces.ICartController;
+import controllers.interfaces.IOrderController;
 import data.PostgresDB;
 import data.interfaces.IDB;
 import RoleManagement.Role;
@@ -33,14 +34,19 @@ public class Main {
 
         IReviewRepository reviewRepo = new ReviewRepository(db);
         ReviewController reviewController = new ReviewController(reviewRepo);
-        ReviewApplication reviewApp = new ReviewApplication(reviewController);
-2
+
+        IOrderRepository orderRepo = new OrderRepository(db);
+        IOrderController orderController = new OrderController(orderRepo);
+
+
 
 
         MyApplication app = new MyApplication(userController);
         BookApplication bookApp = new BookApplication(bookController);
         CartApplication cartApplication = new CartApplication(cartController);
         PaymentApplication paymentApp = new PaymentApplication(paymentController);
+        ReviewApplication reviewApp = new ReviewApplication(reviewController);
+        OrderApplication orderApp = new OrderApplication(orderController);
 
         Start starty = new Start(db);
         starty.start();
@@ -51,6 +57,8 @@ public class Main {
         bookApp.start();
         cartApplication.start();
         paymentApp.start();
+        reviewApp.start();
+        orderApp.start();
 
         db.close();
     }

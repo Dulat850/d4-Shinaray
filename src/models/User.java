@@ -31,6 +31,9 @@ public class User {
         setRole(role);
     }
 
+    public User(int userId, String userName, String email) {
+    }
+
     public int getId() {
         return id;
     }

@@ -94,5 +94,12 @@ public class ReviewController {
         for (Review r : reviews) sb.append(r).append("\n");
         return sb.toString();
     }
+
+    public String addReview(int bookId, int userId, int rating, String comment) {
+        return comment;
+    }
+
+    public void displayAllReviews() {
+    }
 }
 

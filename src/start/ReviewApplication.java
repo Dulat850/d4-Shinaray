@@ -70,6 +70,8 @@ public class ReviewApplication {
         System.out.println(response);
     }
 }*/
+package start;
+
 import controllers.ReviewController;
 import java.util.Scanner;
 
@@ -81,62 +83,48 @@ public class ReviewApplication {
         this.reviewController = reviewController;
     }
 
-    public void start() {
+    public void run() {
         while (true) {
-            System.out.println("\nReview Management:");
+            System.out.println("\n Review Management");
             System.out.println("1. Add Review");
-            System.out.println("2. Approve Review");
-            System.out.println("3. Reject Review");
-            System.out.println("4. Delete Review");
-            System.out.println("5. Show All Reviews");
-            System.out.println("6. Show Pending Reviews");
+            System.out.println("2. Show All Reviews");
             System.out.println("0. Exit");
-            System.out.print("Select an option: ");
+            System.out.print("Enter choice: ");
             int choice = scanner.nextInt();
 
             switch (choice) {
-                case 1 -> addReview();
-                case 2 -> approveReview();
-                case 3 -> rejectReview();
-                case 4 -> deleteReview();
-                case 5 -> System.out.println(reviewController.showAllReviews());
-                case 6 -> System.out.println(reviewController.showPendingReviews());
-                case 0 -> {
-                    System.out.println("Exiting...");
+                case 1:
+                    addReview();
+                    break;
+                case 2:
+                    reviewController.displayAllReviews();
+                    break;
+                case 0:
                     return;
-                }
-                default -> System.out.println("Invalid choice.");
+                default:
+                    System.out.println(" Invalid choice. Try again.");
             }
         }
     }
 
     private void addReview() {
-        System.out.print("Enter User ID: ");
+        System.out.print("Enter Book ID: ");
+        int bookId = scanner.nextInt();
+        System.out.print("Enter Your User ID: ");
         int userId = scanner.nextInt();
+        System.out.print("Enter Rating (1-5): ");
+        int rating = scanner.nextInt();
         scanner.nextLine();
         System.out.print("Enter Comment: ");
         String comment = scanner.nextLine();
-        System.out.print("Enter Rating (1-5): ");
-        int rating = scanner.nextInt();
-        System.out.println(reviewController.addReview(userId, comment, rating));
+
+        String message = reviewController.addReview(bookId, userId, rating, comment); // ✅ Now it works
+        System.out.println(message);
     }
 
-    private void approveReview() {
-        System.out.print("Enter Review ID: ");
-        int reviewId = scanner.nextInt();
-        System.out.println(reviewController.approveReview(reviewId));
-    }
-
-    private void rejectReview() {
-        System.out.print("Enter Review ID: ");
-        int reviewId = scanner.nextInt();
-        System.out.println(reviewController.rejectReview(reviewId));
-    }
-
-    private void deleteReview() {
-        System.out.print("Enter Review ID: ");
-        int reviewId = scanner.nextInt();
-        System.out.println(reviewController.deleteReview(reviewId));
+    public void start() {
     }
 }
+
+
 
