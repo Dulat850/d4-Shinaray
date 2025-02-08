@@ -2,6 +2,7 @@ import controllers.BookController;
 import controllers.CartController;
 import controllers.UserController;
 import controllers.PaymentController;
+import controllers.ReviewController;
 import controllers.interfaces.IBookController;
 import controllers.interfaces.ICartController;
 import data.PostgresDB;
@@ -11,12 +12,13 @@ import repositories.BookRepository;
 import repositories.CartRepository;
 import repositories.UserRepository;
 import repositories.PaymentRepository;
+import repositories.ReviewRepository;
 import repositories.interfaces.IBookRepository;
 import repositories.interfaces.ICartRepository;
 import repositories.interfaces.IUserRepository;
 import repositories.interfaces.IPaymentRepository;
+import repositories.interfaces.IReviewRepository;
 import start.*;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -26,7 +28,6 @@ public class Main {
         IDB db = new PostgresDB(url, user, password);
         Role roll;
         boolean enabled;
-
 
         IUserRepository userRepo = new UserRepository(db);
         UserController userController = new UserController(userRepo);
@@ -40,6 +41,9 @@ public class Main {
         IPaymentRepository paymentRepo = new PaymentRepository(db);
         PaymentController paymentController = new PaymentController(paymentRepo);
 
+        IReviewRepository reviewRepo = new ReviewRepository(db);
+        ReviewController reviewController = new ReviewController(reviewRepo);
+        ReviewApplication reviewApp = new ReviewApplication(reviewController);
 
         MyApplication app = new MyApplication(userController);
         BookApplication bookApp = new BookApplication(bookController);
@@ -55,6 +59,7 @@ public class Main {
         bookApp.start();
         cartApplication.start();
         paymentApp.start();
+        reviewApp.start();
 
         db.close();
     }
