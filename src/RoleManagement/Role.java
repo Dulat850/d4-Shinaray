@@ -1,5 +1,9 @@
 package RoleManagement;
 
 public enum Role {
-    USER, ADMIN
+    USER,
+    ADMIN,
+    COSTUMER,
+    MANAGER,
+    SORTER
 }

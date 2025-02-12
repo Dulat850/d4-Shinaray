@@ -2,7 +2,7 @@ package start;
 
 import data.interfaces.IDB;
 import RoleManagement.Role;
-import models.User;
+import models.users.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +24,7 @@ public class Start {
         System.out.println("---Welcome to Online Books Shop---");
         System.out.println("Choose an option:");
         System.out.println("1. Enter by User");
+        System.out.println("2. Enter by Admin");
         System.out.println("2. Enter by Admin");
 
         int choice = scanner.nextInt();
@@ -58,6 +59,12 @@ public class Start {
                 case 2:
                     enter = loginUser();
         }
+    }
+
+    private void enter() {
+        System.out.println("Choose an option:");
+        System.out.println("1. Login");
+        System.out.println("2. Exist");
     }
 
     private boolean loginUser(){

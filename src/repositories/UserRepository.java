@@ -1,7 +1,7 @@
 package repositories;
 
 import data.interfaces.IDB;
-import models.User;
+import models.users.User;
 import repositories.interfaces.IUserRepository;
 
 import java.sql.*;

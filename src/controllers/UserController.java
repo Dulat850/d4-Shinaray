@@ -1,7 +1,7 @@
 package controllers;
 
 import controllers.interfaces.IUserController;
-import models.User;
+import models.users.User;
 import repositories.interfaces.IUserRepository;
 
 import java.util.List;

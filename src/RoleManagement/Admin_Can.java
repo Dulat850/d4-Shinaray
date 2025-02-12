@@ -1,6 +1,6 @@
 package RoleManagement;
 
-import models.Admin;
+import models.users.Admin;
 
 public class Admin_Can extends Admin {
     private boolean getAllBooks = true;

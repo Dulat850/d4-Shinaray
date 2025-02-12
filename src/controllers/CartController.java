@@ -1,13 +1,12 @@
 package controllers;
 
 import controllers.interfaces.ICartController;
-import models.Book;
+import models.books.Book;
 import models.Cart;
-import models.User;
+import models.users.User;
 import repositories.interfaces.ICartRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CartController implements ICartController {
     private final ICartRepository cartRepository;

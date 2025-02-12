@@ -1,11 +1,11 @@
-package models;
+package models.review_r;
 
 public class Review {
     private int id;
     private int userId;
     private String comment;
     private int rating;
-    private String status; 
+    private String status;
 
     public Review() {
     }
@@ -14,7 +14,7 @@ public class Review {
         this.userId = userId;
         this.comment = comment;
         this.rating = rating;
-        this.status = "Pending"; 
+        this.status = "Pending";
     }
 
     public Review(int id, int userId, String comment, int rating, String status) {

@@ -1,6 +1,6 @@
 package RoleManagement;
 
-import models.User;
+import models.users.User;
 
 public class User_Can extends User {
     private boolean login = true;
